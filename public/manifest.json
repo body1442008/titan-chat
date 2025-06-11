@@ -1,0 +1,21 @@
+{
+  "name": "Titan Chat",
+  "short_name": "Titan",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#0084ff",
+  "theme_color": "#0084ff",
+  "description": "Titan - Modern Messenger with full features, ready for Vercel.",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ]
+}

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <title>تطبيق فايربيس في ملف واحد</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body { font-family: Tahoma, Arial; background: #f9f9f9; margin: 0; padding: 40px; }
+    #container { max-width: 390px; margin: 0 auto; background: #fff; padding: 28px; border-radius: 12px; box-shadow: 0 0 13px #0001; }
+    input, button { width: 100%; font-size: 1em; margin-bottom: 10px; padding: 9px; border-radius: 5px; border: 1px solid #ccc; }
+    button { cursor: pointer; background: #007bff; color: white; border: none; }
+    .msg { margin: 14px 0; color: #c00; }
+    .data-row { padding: 8px 0; border-bottom: 1px solid #eee; }
+    .logout { background: #c00; }
+  </style>
+</head>
+<body>
+  <div id="container">
+    <h2>تسجيل الدخول Firebase</h2>
+    <div id="user-area" style="display:none">
+      <p>مرحباً <span id="user-email"></span>!</p>
+      <button class="logout" onclick="logout()">تسجيل الخروج</button>
+      <hr>
+      <h4>إضافة بيانات</h4>
+      <input type="text" id="data-input" placeholder="اكتب نص..." />
+      <button onclick="addData()">إضافة</button>
+      <hr>
+      <h4>البيانات:</h4>
+      <div id="data-list"></div>
+    </div>
+    <div id="login-area">
+      <input type="email" id="email" placeholder="الإيميل" />
+      <input type="password" id="password" placeholder="كلمة السر" />
+      <button onclick="login()">دخول</button>
+      <button onclick="signup()">تسجيل حساب جديد</button>
+      <div class="msg" id="msg"></div>
+    </div>
+  </div>
+
+  <!-- Firebase CDN -->
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
+  <script>
+    // بيانات مشروعك من Firebase Console
+    const firebaseConfig = {
+      apiKey: "ضع-API-KEY-الخاصة-بك-هنا",
+      authDomain: "ضع-authDomain-الخاصة-بك",
+      projectId: "ضع-projectId-الخاصة-بك",
+      storageBucket: "ضع-storageBucket-الخاصة-بك",
+      messagingSenderId: "ضع-messagingSenderId-الخاصة-بك",
+      appId: "ضع-appId-الخاصة-بك"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    // عناصر DOM
+    const loginArea = document.getElementById("login-area");
+    const userArea = document.getElementById("user-area");
+    const userEmail = document.getElementById("user-email");
+    const msg = document.getElementById("msg");
+    const dataInput = document.getElementById("data-input");
+    const dataList = document.getElementById("data-list");
+
+    // تحديث حالة المستخدم
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        loginArea.style.display = "none";
+        userArea.style.display = "block";
+        userEmail.textContent = user.email;
+        loadData();
+      } else {
+        loginArea.style.display = "block";
+        userArea.style.display = "none";
+        msg.textContent = "";
+      }
+    });
+
+    function login() {
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+      msg.textContent = "";
+      auth.signInWithEmailAndPassword(email, password)
+        .catch(e => msg.textContent = "خطأ: " + e.message);
+    }
+
+    function signup() {
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+      msg.textContent = "";
+      auth.createUserWithEmailAndPassword(email, password)
+        .catch(e => msg.textContent = "خطأ: " + e.message);
+    }
+
+    function logout() {
+      auth.signOut();
+      dataList.innerHTML = "";
+    }
+
+    function addData() {
+      const value = dataInput.value.trim();
+      if (!value) return;
+      db.collection("data").add({
+        text: value,
+        user: auth.currentUser.uid,
+        created: new Date()
+      }).then(() => {
+        dataInput.value = "";
+        loadData();
+      });
+    }
+
+    function loadData() {
+      dataList.innerHTML = "تحميل...";
+      db.collection("data")
+        .where("user", "==", auth.currentUser.uid)
+        .orderBy("created", "desc")
+        .limit(20)
+        .get()
+        .then(snap => {
+          if (snap.empty) {
+            dataList.innerHTML = "<i>لا توجد بيانات</i>";
+            return;
+          }
+          let html = "";
+          snap.forEach(doc => {
+            html += `<div class="data-row">${doc.data().text}</div>`;
+          });
+          dataList.innerHTML = html;
+        });
+    }
+  </script>
+</body>
+</html>

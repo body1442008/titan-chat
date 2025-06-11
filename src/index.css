@@ -1,0 +1,11 @@
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Inter:wght@400;700&display=swap');
+body {
+  font-family: "Cairo", "Inter", system-ui, sans-serif;
+}
+.bg-primary { background-color: #0084ff; }
+.text-primary { color: #0084ff; }
+input:focus, textarea:focus { outline: 2px solid #0084ff; }
+::-webkit-scrollbar { width: 7px; background: #f0f4fa; }
+::-webkit-scrollbar-thumb { background: #c7d7f1; border-radius: 6px; }
+.dark ::-webkit-scrollbar { background: #23272f; }
+.dark ::-webkit-scrollbar-thumb { background: #1e293b; }

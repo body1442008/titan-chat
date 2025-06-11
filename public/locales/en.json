@@ -1,0 +1,17 @@
+{
+  "appName": "Titan",
+  "login": "Login",
+  "register": "Register",
+  "email": "Email",
+  "password": "Password",
+  "forgotPassword": "Forgot password?",
+  "logout": "Logout",
+  "send": "Send",
+  "search": "Search",
+  "loginGoogle": "Login with Google",
+  "loginApple": "Login with Apple",
+  "loginSMS": "Login via SMS",
+  "smsCode": "Verification code",
+  "loading": "Loading...",
+  ...
+}
